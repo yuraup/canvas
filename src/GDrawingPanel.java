@@ -15,6 +15,6 @@ public class GDrawingPanel extends JPanel {
 		super.paint(graphics); //graphics == 그림 도구 
 		graphics.setColor(Color.red);
 		graphics.drawRect(10, 10, 40, 40);
-		System.out.println("됏");
+
 	}
 }
