@@ -1,59 +1,38 @@
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 import javax.swing.ButtonGroup;
 import javax.swing.JRadioButton;
 import javax.swing.JToolBar;
 
-public class GToolBar extends JToolBar implements ActionListener {
-	private static final long serialVersionUID = 1L;
 
-	public GToolBar () {
+public class GToolBar extends JToolBar {
+	private static final long serialVersionUID = 1L;
+	
+	private JRadioButton btnRectangle;
+	private JRadioButton btnOval;
+	private JRadioButton btnLine;
+	private JRadioButton btnPloygon;
+	
+	public GToolBar (GMainFrame.ItemHandler itemHandler) {
 		ButtonGroup group = new ButtonGroup();
 
+		this.btnRectangle = new JRadioButton("Rectangle");
+		this.btnRectangle.addItemListener(itemHandler);
+		group.add(this.btnRectangle);
+		this.add(this.btnRectangle);
 		
-		JRadioButton btnRectangle = new JRadioButton("Rectangle");
-		btnRectangle.addActionListener(this);
-		group.add(btnRectangle);
-		this.add(btnRectangle);
+		this.btnOval = new JRadioButton("Oval");
+		this.btnOval.addItemListener(itemHandler);
 		
-		JRadioButton btnOval = new JRadioButton("Oval");
-		btnOval.addActionListener(this);
-		group.add(btnOval);
-		this.add(btnOval);
+		group.add(this.btnOval);
+		this.add(this.btnOval);
 		
-		JRadioButton btnLine = new JRadioButton("Line");
-		btnLine.addActionListener(this);
-		group.add(btnLine);
-		this.add(btnLine);
+		this.btnLine = new JRadioButton("Line");
+		this.btnLine.addItemListener(itemHandler);
+		group.add(this.btnLine);	
+		this.add(this.btnLine);
 		
-		JRadioButton btnPloygon = new JRadioButton("Ploygon");
-		btnPloygon.addActionListener(this);
-		group.add(btnPloygon);
-		this.add(btnPloygon);
-		
+		this.btnPloygon = new JRadioButton("Ploygon");
+		this.btnPloygon.addItemListener(itemHandler);
+		group.add(this.btnPloygon);
+		this.add(this.btnPloygon);
 	}
-	
-	public String selectTool (String select) {
-		GDrawingPanel gDrawingPanel = new GDrawingPanel();
-		gDrawingPanel.aa(select);
-		System.out.println("d" + select);
-		return select;
-	}
-	
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		String buttonRoute = e.getActionCommand();
-		
-		if (buttonRoute == "Rectangle") {
-			selectTool("Rectangle");
-		} else if (buttonRoute == "Oval") {
-			selectTool("Oval");
-		} else if (buttonRoute == "Line") {
-			selectTool("Line");
-		} else if (buttonRoute == "Ploygon") {
-			selectTool("Ploygon");
-		}
-	}
-	
 }
