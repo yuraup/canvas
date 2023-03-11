@@ -8,6 +8,7 @@ import javax.swing.JPanel;
 
 public class GDrawingPanel extends JPanel implements MouseMotionListener, MouseListener {
 	private static final long serialVersionUID = 1L;	
+	
 	private int x = 10;
 	private int y = 10;
 	
@@ -19,15 +20,19 @@ public class GDrawingPanel extends JPanel implements MouseMotionListener, MouseL
 		addMouseListener(this);
 	}
 	
+	public void aa (String select) {
+		System.out.println("dd" + select);
+	}
+	
 	public void paint(Graphics graphics) {
 		super.paint(graphics); //graphics == 그림 도구 
 		graphics.setColor(Color.red);
+		System.out.println("에옹 ");
 		graphics.drawRect(this.x, this.y, 40, 40);
 	}
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -40,19 +45,14 @@ public class GDrawingPanel extends JPanel implements MouseMotionListener, MouseL
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		this.isfocus = false;
-		
 	}
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
