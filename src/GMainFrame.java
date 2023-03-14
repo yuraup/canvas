@@ -9,10 +9,12 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 public class GMainFrame extends JFrame {
+	private static final long serialVersionUID = 1L;
+	
 	private GMenuBar menuBar;
 	private GToolBar toolBar;
 	private GDrawingPanel drawingPanel;
-	private static final long serialVersionUID = 1L;
+	
 	private String select;
 	ItemHandler itemHandler;
 	int frame_width = 600;

@@ -7,7 +7,7 @@ import java.awt.event.MouseMotionListener;
 
 import javax.swing.JPanel;
 
-public class GDrawingPanel extends JPanel implements MouseMotionListener, MouseListener {
+public class GDrawingPanel extends JPanel{
 	private static final long serialVersionUID = 1L;	
 	Graphics graphics;
 	boolean isfouse = false;
@@ -30,21 +30,23 @@ public class GDrawingPanel extends JPanel implements MouseMotionListener, MouseL
 	
 	public GDrawingPanel() {
 		this.setBackground(Color.black);
-		addMouseMotionListener(this);
-		addMouseListener(this);
+		
+		MouseEventHandler mouseEventHandler = new MouseEventHandler();
+		this.addMouseListener(mouseEventHandler);
+		this.addMouseMotionListener(mouseEventHandler);
 	}
 	
 	
-	public void getShape (String selectedShape) {
+	public void getShape (String selectedShape) { //어떤 모양의 도형을 그릴지 
 		this.shape = selectedShape;
 	}
 	
-	public void paint(Graphics g) {
-		super.paint(g); //graphics == 그림 도구 
+	public void paint(Graphics g) { //JPanel 의 원래 paint함수를 대체함 (오버라이드) 
+		super.paint(g); //graphics == 그림 도구  //super 쓰면
 		g.setColor(Color.white);
 		
 		//2주차 
-		width = Math.abs(secondPointer.x - firstPointer.x);
+		width = Math.abs(secondPointer.x - firstPointer.x); //절댓값 리턴 == 양수 반환 
 		height = Math.abs(secondPointer.y - firstPointer.y);
 		
 		minPointx = Math.min(firstPointer.x, secondPointer.x);
@@ -62,72 +64,79 @@ public class GDrawingPanel extends JPanel implements MouseMotionListener, MouseL
 			
 		default:
 			break;
-			
 		}
 		g.dispose();
 	}
 	
-	public void savePaint() {
+	private class MouseEventHandler implements MouseListener, MouseMotionListener {
 
-	}
-
-	@Override
-	public void mouseClicked(MouseEvent e) {
-		
-	}
-
-	@Override
-	public void mousePressed(MouseEvent e) {
-		firstPointer.setLocation(0,0);
-		secondPointer.setLocation(0,0);
-		firstPointer.setLocation(e.getX(), e.getY());
-		
-		//도형 드래그 움직이기 : 1주차 과제 
-//		if ((e.getX() - this.x <= 40 && e.getX() - this.x >= 0) && (e.getY() - this.y <= 40 && e.getY() - this.y >= 0))
-//		this.isfocus = true;	
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent e) {
-//		this.isfocus = false;
-		secondPointer.setLocation(e.getX(), e.getY());
-		paint(getGraphics());
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent e) {
-	}
-
-	@Override
-	public void mouseExited(MouseEvent e) {
-	}
-
-	@Override
-	public void mouseDragged(MouseEvent e) {
-		width = Math.abs(secondPointer.x - firstPointer.x);
-		height = Math.abs(secondPointer.y - firstPointer.y);
-		
-		minPointx = Math.min(firstPointer.x, secondPointer.x);
-		minPointy = Math.min(firstPointer.y, secondPointer.y);
-		
-		if (this.shape == "Rectangle") {
-			Graphics g = getGraphics();
-			g.drawRect(minPointx, minPointy, width, height);
-			secondPointer.setLocation(e.getX(), e.getY());
+		@Override
+		public void mouseDragged(MouseEvent e) {
+			width = Math.abs(secondPointer.x - firstPointer.x); //가로 
+			height = Math.abs(secondPointer.y - firstPointer.y); //세로 
 			
-			repaint();
-			g.dispose();
-		} else if (this.shape == "Oval") {
-			Graphics g = getGraphics();
-			g.drawOval(minPointx, minPointy, width, height);
-			secondPointer.setLocation(e.getX(), e.getY());
+			minPointx = Math.min(firstPointer.x, secondPointer.x); //둘 중 최소값 리턴 == x좌표 
+			minPointy = Math.min(firstPointer.y, secondPointer.y); //y좌표 
+
+			if (shape == "Rectangle") {
+				Graphics g = getGraphics();
+				g.drawRect(minPointx, minPointy, width, height);
+				secondPointer.setLocation(e.getX(), e.getY());
 			
-			repaint();
-			g.dispose();
+				repaint();
+				g.dispose();
+			} else if (shape == "Oval") {
+				Graphics g = getGraphics();
+				g.drawOval(minPointx, minPointy, width, height);
+				secondPointer.setLocation(e.getX(), e.getY());
+				
+				repaint();
+				g.dispose();
+			}
 		}
-	}
 
-	@Override
-	public void mouseMoved(MouseEvent e) {
+		@Override
+		public void mouseMoved(MouseEvent e) {
+			System.out.println("ddd" + e.getX() + e.getY());
+			
+		}
+
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+			firstPointer.setLocation(0,0);
+			secondPointer.setLocation(0,0);
+			firstPointer.setLocation(e.getX(), e.getY());
+
+			//도형 드래그 움직이기 : 1주차 과제 
+//			if ((e.getX() - this.x <= 40 && e.getX() - this.x >= 0) && (e.getY() - this.y <= 40 && e.getY() - this.y >= 0))
+//			this.isfocus = true;	
+			
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+//			this.isfocus = false;
+			secondPointer.setLocation(e.getX(), e.getY());
+			paint(getGraphics());
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+		
 	}
 }
