@@ -60,6 +60,9 @@ public class GMainFrame extends JFrame {
 		} else if (shape == "Ploygon") {
 			// 과제 밖 범위
 			this.drawingPanel.getShape("Ploygon");
+		} else if (shape == "Delete") {
+			// 과제 밖 범위
+			this.drawingPanel.getShape("Delete");
 		}
 	}
 
