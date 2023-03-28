@@ -18,7 +18,9 @@ public class GDrawingPanel extends JPanel {
 	private EDrawingState eDrawingState;
 
 	private Vector<Rectangle> shapes;
+	private Vector<Oval> shapesO;
 	private Rectangle currentShape; // 현재 도형
+	private Oval currentShapeO;
 
 	private GToolBar toolbar;
 
@@ -29,8 +31,10 @@ public class GDrawingPanel extends JPanel {
 	public GDrawingPanel() {
 		this.eDrawingState = EDrawingState.eIdle;
 		this.shapes = new Vector<Rectangle>();
-		this.currentShape = null; // 선택된 거 없음
+		this.shapesO = new Vector<Oval>();
 
+		this.currentShape = null; // 선택된 거 없음
+		this.currentShapeO = null;
 		this.setBackground(Color.WHITE);
 
 		MouseEventHandler mouseEventHandler = new MouseEventHandler();
@@ -40,8 +44,15 @@ public class GDrawingPanel extends JPanel {
 
 	public void paint(Graphics graphics) {
 		super.paint(graphics); // 오버라이딩
-		for (Rectangle shape : shapes) {
-			shape.draw(graphics);
+
+		if (toolbar.getEButtonShape() == GToolBar.EButtonShape.eRectangle) {
+			for (Rectangle shape : shapes) {
+				shape.draw(graphics);
+			}
+		} else if (toolbar.getEButtonShape() == GToolBar.EButtonShape.eOval) {
+			for (Oval shapeO : shapesO) {
+				shapeO.draw(graphics);
+			}
 		}
 	}
 
@@ -57,6 +68,27 @@ public class GDrawingPanel extends JPanel {
 
 		public void draw(Graphics graphics) {
 			graphics.drawRect(x, y, w, h);
+
+		}
+
+		public void setDimension(int x2, int y2) {
+			w = x2 - x;
+			h = y2 - y;
+		}
+	}
+
+	private class Oval {
+		private int x, y, w, h;
+
+		public Oval(int x, int y, int w, int h) {
+			this.x = x;
+			this.y = y;
+			this.w = w;
+			this.h = h;
+		}
+
+		public void draw(Graphics graphics) {
+			graphics.drawOval(x, y, w, h);
 
 		}
 
@@ -82,10 +114,9 @@ public class GDrawingPanel extends JPanel {
 			if (eDrawingState == EDrawingState.eIdle) {
 				if (toolbar.getEButtonShape() == GToolBar.EButtonShape.eRectangle) {
 					currentShape = new Rectangle(e.getX(), e.getY(), 0, 0);
+				} else if (toolbar.getEButtonShape() == GToolBar.EButtonShape.eOval) {
+					currentShapeO = new Oval(e.getX(), e.getY(), 0, 0);
 				}
-//				else if () {
-//					
-//				}
 
 				eDrawingState = EDrawingState.eDrawing;
 			}
@@ -94,13 +125,21 @@ public class GDrawingPanel extends JPanel {
 		@Override
 		public void mouseDragged(MouseEvent e) {
 			if (eDrawingState == EDrawingState.eDrawing) {
-				Graphics graphics = getGraphics();
-				graphics.setXORMode(getBackground());
-				currentShape.draw(graphics);
-				currentShape.setDimension(e.getX(), e.getY());
-				currentShape.draw(graphics);
-			}
+				if (toolbar.getEButtonShape() == GToolBar.EButtonShape.eRectangle) {
+					Graphics graphics = getGraphics();
+					graphics.setXORMode(getBackground());
+					currentShape.draw(graphics);
+					currentShape.setDimension(e.getX(), e.getY());
+					currentShape.draw(graphics);
+				} else if (toolbar.getEButtonShape() == GToolBar.EButtonShape.eOval) {
+					Graphics graphics = getGraphics();
+					graphics.setXORMode(getBackground());
 
+					currentShapeO.draw(graphics);
+					currentShapeO.setDimension(e.getX(), e.getY());
+					currentShapeO.draw(graphics);
+				}
+			}
 		}
 
 		@Override
@@ -108,6 +147,7 @@ public class GDrawingPanel extends JPanel {
 			if (eDrawingState == EDrawingState.eDrawing) {
 				shapes.add(currentShape);
 				currentShape = null;
+				currentShapeO = null;
 				eDrawingState = EDrawingState.eIdle;
 			}
 		}

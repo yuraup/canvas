@@ -11,14 +11,8 @@ public class GMainFrame extends JFrame {
 	private GToolBar toolBar;
 	private GDrawingPanel drawingPanel;
 
-	private String select;
 	int frame_width = 600;
 	int frame_height = 400;
-
-	public void setTool(String select) {
-		this.select = select;
-//		this.drawingPanel.getShape(this.select);
-	}
 
 	public GMainFrame() {
 
@@ -41,25 +35,7 @@ public class GMainFrame extends JFrame {
 		this.drawingPanel = new GDrawingPanel();
 		this.add(drawingPanel, BorderLayout.CENTER);
 
-		this.drawingPanel.setToolBar(toolBar);
+		this.drawingPanel.setToolBar(toolBar); // 자식 연결
 		this.setVisible(true);
 	}
-
-	private void selectTool(String shape) {
-//		if (shape == "Rectangle") {
-//			this.drawingPanel.getShape("Rectangle");
-//		} else if (shape == "Oval") {
-//			this.drawingPanel.getShape("Oval");
-//		} else if (shape == "Line") {
-//			// 과제 밖 범위
-//			this.drawingPanel.getShape("Line");
-//		} else if (shape == "Ploygon") {
-//			// 과제 밖 범위
-//			this.drawingPanel.getShape("Ploygon");
-//		} else if (shape == "Delete") {
-//			// 과제 밖 범위
-//			this.drawingPanel.getShape("Delete");
-//		}
-	}
-
 }

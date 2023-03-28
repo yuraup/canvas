@@ -48,6 +48,7 @@ public class GToolBar extends JToolBar {
 		@Override
 		public void actionPerformed(ActionEvent event) {
 			eButtonShape = EButtonShape.valueOf(event.getActionCommand());
+			System.out.println("선택된 도형 확인:" + eButtonShape);
 		}
 	}
 }
