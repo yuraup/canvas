@@ -8,13 +8,13 @@ import javax.swing.JToolBar;
 public class GToolBar extends JToolBar {
 	private static final long serialVersionUID = 1L;
 
-	public enum EButtonShape {
+	public enum EShape {
 		eRectangle("Rectangle"), // 변수 이름을 0번 이자 스트링 타입 가능
 		eOval("Oval"), eLine("Line"), ePolygon("Polygon"); // user가 정의하는 순서를 가진 집합을 정의
 
 		private String name;
 
-		private EButtonShape(String name) {
+		private EShape(String name) {
 			this.name = name;
 		}
 
@@ -23,10 +23,18 @@ public class GToolBar extends JToolBar {
 		}
 	}
 
-	private EButtonShape eButtonShape;
+	private EShape eSelectedShape;
 
-	public EButtonShape getEButtonShape() {
-		return this.eButtonShape; // 드로잉 패널에서 그림 그릴 때마다 가지고 갈 것
+	public EShape getESelectedShape() { // 도형 모양 가져오기
+		return null;
+	}
+
+	public EShape getEButtonShape() {
+		return this.eSelectedShape; // 드로잉 패널에서 그림 그릴 때마다 가지고 갈 것
+	}
+
+	public void resetESelectedShape() {
+		this.eSelectedShape = null;
 	}
 
 	public GToolBar() {
@@ -35,20 +43,20 @@ public class GToolBar extends JToolBar {
 		ActionHandler actionHandler = new ActionHandler();
 		ButtonGroup buttonGroup = new ButtonGroup();
 
-		for (EButtonShape eButtonShape : EButtonShape.values()) {
+		for (EShape eButtonShape : EShape.values()) {
 			JRadioButton buttonShape = new JRadioButton(eButtonShape.getName());
 			this.add(buttonShape);
 			buttonShape.setActionCommand(eButtonShape.toString()); // 스트링 변환
 			buttonShape.addActionListener(actionHandler);
 			buttonGroup.add(buttonShape);
 		}
+		eSelectedShape = null;
 	}
 
 	class ActionHandler implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent event) {
-			eButtonShape = EButtonShape.valueOf(event.getActionCommand());
-			System.out.println("선택된 도형 확인:" + eButtonShape);
+			eSelectedShape = EShape.valueOf(event.getActionCommand());
 		}
 	}
 }

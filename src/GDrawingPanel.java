@@ -1,5 +1,6 @@
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -12,15 +13,15 @@ public class GDrawingPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 
 	private enum EDrawingState {
-		eIdle, eDrawing
+		eIdle, eDrawing, eMoving, eResizing, eRotating
 	}
 
 	private EDrawingState eDrawingState;
 
-	private Vector<Rectangle> shapes;
-	private Vector<Oval> shapesO;
+	private Vector<Rectangle> shapes; // 모든 도형 다 있음
+//	private Vector<Oval> shapesO;
 	private Rectangle currentShape; // 현재 도형
-	private Oval currentShapeO;
+//	private Oval currentShapeO;
 
 	private GToolBar toolbar;
 
@@ -31,10 +32,10 @@ public class GDrawingPanel extends JPanel {
 	public GDrawingPanel() {
 		this.eDrawingState = EDrawingState.eIdle;
 		this.shapes = new Vector<Rectangle>();
-		this.shapesO = new Vector<Oval>();
+//		this.shapesO = new Vector<Oval>();
 
 		this.currentShape = null; // 선택된 거 없음
-		this.currentShapeO = null;
+//		this.currentShapeO = null;
 		this.setBackground(Color.WHITE);
 
 		MouseEventHandler mouseEventHandler = new MouseEventHandler();
@@ -45,15 +46,25 @@ public class GDrawingPanel extends JPanel {
 	public void paint(Graphics graphics) {
 		super.paint(graphics); // 오버라이딩
 
-		if (toolbar.getEButtonShape() == GToolBar.EButtonShape.eRectangle) {
+		if (toolbar.getEButtonShape() == GToolBar.EShape.eRectangle) {
 			for (Rectangle shape : shapes) {
 				shape.draw(graphics);
 			}
-		} else if (toolbar.getEButtonShape() == GToolBar.EButtonShape.eOval) {
-			for (Oval shapeO : shapesO) {
-				shapeO.draw(graphics);
+		}
+//		else if (toolbar.getEButtonShape() == GToolBar.EShape.eOval) {
+//			for (Oval shapeO : shapesO) {
+//				shapeO.draw(graphics);
+//			}
+//		}
+	}
+
+	public Rectangle onShape(Point point) { // 도형 있니
+		for (Rectangle rectangle : shapes) {
+			if (rectangle.onShape(point)) { // 80번째 함수
+				return rectangle;
 			}
 		}
+		return null;
 	}
 
 	private class Rectangle {
@@ -64,6 +75,13 @@ public class GDrawingPanel extends JPanel {
 			this.y = y;
 			this.w = w;
 			this.h = h;
+		}
+
+		public boolean onShape(Point p) { // 도형 움직이는 거?? 도형이 있냐고 ??
+			if ((p.x > x && p.y < x + w) && (p.x > y && p.y < y)) {
+				return true;
+			}
+			return false;
 		}
 
 		public void draw(Graphics graphics) {
@@ -77,26 +95,26 @@ public class GDrawingPanel extends JPanel {
 		}
 	}
 
-	private class Oval {
-		private int x, y, w, h;
-
-		public Oval(int x, int y, int w, int h) {
-			this.x = x;
-			this.y = y;
-			this.w = w;
-			this.h = h;
-		}
-
-		public void draw(Graphics graphics) {
-			graphics.drawOval(x, y, w, h);
-
-		}
-
-		public void setDimension(int x2, int y2) {
-			w = x2 - x;
-			h = y2 - y;
-		}
-	}
+//	private class Oval {
+//		private int x, y, w, h;
+//
+//		public Oval(int x, int y, int w, int h) {
+//			this.x = x;
+//			this.y = y;
+//			this.w = w;
+//			this.h = h;
+//		}
+//
+//		public void draw(Graphics graphics) {
+//			graphics.drawOval(x, y, w, h);
+//
+//		}
+//
+//		public void setDimension(int x2, int y2) {
+//			w = x2 - x;
+//			h = y2 - y;
+//		}
+//	}
 
 	private class MouseEventHandler implements MouseListener, MouseMotionListener {
 
@@ -112,32 +130,38 @@ public class GDrawingPanel extends JPanel {
 		@Override
 		public void mousePressed(MouseEvent e) {
 			if (eDrawingState == EDrawingState.eIdle) {
-				if (toolbar.getEButtonShape() == GToolBar.EButtonShape.eRectangle) {
-					currentShape = new Rectangle(e.getX(), e.getY(), 0, 0);
-				} else if (toolbar.getEButtonShape() == GToolBar.EButtonShape.eOval) {
-					currentShapeO = new Oval(e.getX(), e.getY(), 0, 0);
+				if (toolbar.getEButtonShape() == null) { // 툴바 선택 안 됐어 -> 기존 도형 움직여
+					currentShape = onShape(e.getPoint());
+					if (currentShape != null) { // 도형이 있으면
+						eDrawingState = EDrawingState.eMoving;
+					}
+				} else {
+					if (toolbar.getEButtonShape() == GToolBar.EShape.eRectangle) { // 제약 조건
+						currentShape = new Rectangle(e.getX(), e.getY(), 0, 0);
+					} else if (toolbar.getEButtonShape() == GToolBar.EShape.eOval) {
+						currentShape = new Rectangle(e.getX(), e.getY(), 0, 0);
+					} else if (toolbar.getEButtonShape() == GToolBar.EShape.eLine) {
+						currentShape = new Rectangle(e.getX(), e.getY(), 0, 0);
+					} else if (toolbar.getEButtonShape() == GToolBar.EShape.ePolygon) {
+						currentShape = new Rectangle(e.getX(), e.getY(), 0, 0);
+					}
 				}
-
-				eDrawingState = EDrawingState.eDrawing;
+				eDrawingState = EDrawingState.eDrawing; // drawing 상태로 전환
 			}
 		}
 
 		@Override
 		public void mouseDragged(MouseEvent e) {
 			if (eDrawingState == EDrawingState.eDrawing) {
-				if (toolbar.getEButtonShape() == GToolBar.EButtonShape.eRectangle) {
-					Graphics graphics = getGraphics();
-					graphics.setXORMode(getBackground());
-					currentShape.draw(graphics);
-					currentShape.setDimension(e.getX(), e.getY());
-					currentShape.draw(graphics);
-				} else if (toolbar.getEButtonShape() == GToolBar.EButtonShape.eOval) {
+				if (toolbar.getEButtonShape() == GToolBar.EShape.eRectangle) {
 					Graphics graphics = getGraphics();
 					graphics.setXORMode(getBackground());
 
-					currentShapeO.draw(graphics);
-					currentShapeO.setDimension(e.getX(), e.getY());
-					currentShapeO.draw(graphics);
+					currentShape.draw(graphics);
+					currentShape.setDimension(e.getX(), e.getY());
+					currentShape.draw(graphics);
+				} else if (eDrawingState == EDrawingState.eMoving) {
+
 				}
 			}
 		}
@@ -147,8 +171,9 @@ public class GDrawingPanel extends JPanel {
 			if (eDrawingState == EDrawingState.eDrawing) {
 				shapes.add(currentShape);
 				currentShape = null;
-				currentShapeO = null;
+//				currentShapeO = null;
 				eDrawingState = EDrawingState.eIdle;
+				toolbar.resetESelectedShape();
 			}
 		}
 
