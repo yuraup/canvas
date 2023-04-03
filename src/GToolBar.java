@@ -7,6 +7,8 @@ import javax.swing.JToolBar;
 
 public class GToolBar extends JToolBar {
 	private static final long serialVersionUID = 1L;
+	JRadioButton eOpenShape = null;
+	ButtonGroup buttonGroup;
 
 	public enum EShape {
 		eRectangle("Rectangle"), // 변수 이름을 0번 이자 스트링 타입 가능
@@ -15,6 +17,7 @@ public class GToolBar extends JToolBar {
 		private String name;
 
 		private EShape(String name) {
+
 			this.name = name;
 		}
 
@@ -33,24 +36,26 @@ public class GToolBar extends JToolBar {
 		return this.eSelectedShape; // 드로잉 패널에서 그림 그릴 때마다 가지고 갈 것
 	}
 
-	public void resetESelectedShape() {
+	public void resetESelectedShape() {// 선택된 도형 초기화
 		this.eSelectedShape = null;
+		if (this.eSelectedShape == null) {
+			this.buttonGroup.clearSelection();
+		}
 	}
 
 	public GToolBar() {
 		super();
 
 		ActionHandler actionHandler = new ActionHandler();
-		ButtonGroup buttonGroup = new ButtonGroup();
-
+		buttonGroup = new ButtonGroup();
 		for (EShape eButtonShape : EShape.values()) {
 			JRadioButton buttonShape = new JRadioButton(eButtonShape.getName());
 			this.add(buttonShape);
+
 			buttonShape.setActionCommand(eButtonShape.toString()); // 스트링 변환
 			buttonShape.addActionListener(actionHandler);
 			buttonGroup.add(buttonShape);
 		}
-		eSelectedShape = null;
 	}
 
 	class ActionHandler implements ActionListener {
