@@ -11,7 +11,7 @@ public class GToolBar extends JToolBar {
 	ButtonGroup buttonGroup;
 
 	public enum EShape {
-		eRectangle("Rectangle"), // 변수 이름을 0번 이자 스트링 타입 가능
+		eSelect("Select"), eRectangle("Rectangle"), // 변수 이름을 0번 이자 스트링 타입 가능
 		eOval("Oval"), eLine("Line"), ePolygon("Polygon"); // user가 정의하는 순서를 가진 집합을 정의
 
 		private String name;
@@ -39,15 +39,17 @@ public class GToolBar extends JToolBar {
 	public void resetESelectedShape() {// 선택된 도형 초기화
 		this.eSelectedShape = null;
 		if (this.eSelectedShape == null) {
-			this.buttonGroup.clearSelection();
+			JRadioButton selectButton = (JRadioButton) this.getComponent(EShape.eSelect.ordinal());
+			selectButton.doClick();
+//			this.buttonGroup.clearSelection(); 
 		}
 	}
 
 	public GToolBar() {
 		super();
-
 		ActionHandler actionHandler = new ActionHandler();
 		buttonGroup = new ButtonGroup();
+
 		for (EShape eButtonShape : EShape.values()) {
 			JRadioButton buttonShape = new JRadioButton(eButtonShape.getName());
 			this.add(buttonShape);
@@ -56,6 +58,9 @@ public class GToolBar extends JToolBar {
 			buttonShape.addActionListener(actionHandler);
 			buttonGroup.add(buttonShape);
 		}
+		JRadioButton selectButton = (JRadioButton) this.getComponent(EShape.eSelect.ordinal());
+		selectButton.doClick();
+		eSelectedShape = EShape.eSelect;
 	}
 
 	class ActionHandler implements ActionListener {
