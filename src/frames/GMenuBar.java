@@ -1,3 +1,4 @@
+package frames;
 import javax.swing.JMenuBar;
 
 public class GMenuBar extends JMenuBar {

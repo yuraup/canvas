@@ -1,3 +1,4 @@
+package frames;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -41,6 +42,7 @@ public class GToolBar extends JToolBar {
 		if (this.eSelectedShape == null) {
 			JRadioButton selectButton = (JRadioButton) this.getComponent(EShape.eSelect.ordinal());
 			selectButton.doClick();
+
 //			this.buttonGroup.clearSelection(); 
 		}
 	}

@@ -1,8 +1,13 @@
+package main;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 
 import javax.swing.JFrame;
+
+import frames.GDrawingPanel;
+import frames.GMenuBar;
+import frames.GToolBar;
 
 public class GMainFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
