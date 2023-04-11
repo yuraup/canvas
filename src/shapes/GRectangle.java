@@ -1,28 +1,22 @@
 package shapes;
 
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.Rectangle;
 
 public class GRectangle extends GShape {
-	public GRectangle(int x1, int y1, int x2, int y2) {
-		super(x1, y1, x2, y2); // 부모한테 얘기
-		shape = new Rectangle(x1, y1, x2 - x1, y2 - y1);
+
+	public GRectangle() {
+		// Shape 클래스에 contains 함수 / 영역에 점이 있냐.. 이런 메소드가 있음
+	}
+
+	@Override
+	public void movePoint(int x2, int y2) {
+		Rectangle rectangle = ((Rectangle) shape);
+		rectangle.setFrame(rectangle.getX(), rectangle.getY(), x2 - rectangle.getX(), y2 - rectangle.getY());
 
 	}
 
-	public boolean onShape(Point p) { // 도형 움직이는 거?? 도형이 있냐고 ??
-		return shape.contains(p);
-	}
-
-	public void draw(Graphics graphics) {
-		Graphics2D graphics2d = (Graphics2D) graphics;
-		graphics2d.draw(shape);
-	}
-
-	public void addPoint(int x2, int y2) {
-		Rectangle rect = (Rectangle) shape; // 현재 도형의 shape 객체를 Rectangle 타입으로 캐스팅
-		rect.setSize(x2 - rect.x, y2 - rect.y); // 우측 하단의 점을 이용하여 width와 height를 계산하여 shape의 크기를 변경
+	@Override
+	public void setShape(int x1, int y1, int x2, int y2) { // 추가
+		this.shape = new Rectangle(x1, y1, x2 - x1, y2 - y1);
 	}
 }

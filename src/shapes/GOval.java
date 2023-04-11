@@ -1,28 +1,21 @@
 package shapes;
 
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.geom.Ellipse2D;
 
 public class GOval extends GShape {
-	public GOval(int x1, int y1, int x2, int y2) {
-		super(x1, y1, x2, y2);
-		shape = new Ellipse2D.Double(x1, y1, x2 - x1, y2 - y1);
+
+	public GOval() {
+
 	}
 
-	public boolean onShape(Point p) {
-		return shape.contains(p);
+	@Override
+	public void setShape(int x1, int y1, int x2, int y2) {
+		this.shape = new Ellipse2D.Double(x1, y1, x2 - x1, y2 - y1);
 	}
 
-	public void draw(Graphics graphics) { // 그림 그리기
-		Graphics2D graphics2d = (Graphics2D) graphics;
-		graphics2d.draw(shape);
-	}
-
-	public void addPoint(int x2, int y2) {
-		double x1 = shape.getBounds2D().getX(); //좌표 하나 더 필요
-		double y1 = shape.getBounds2D().getY();
-		((Ellipse2D.Double) shape).setFrameFromDiagonal(x1, y1, x2, y2);
+	@Override
+	public void movePoint(int x2, int y2) {
+		Ellipse2D ellipse2D = ((Ellipse2D) shape);
+		ellipse2D.setFrame(ellipse2D.getX(), ellipse2D.getY(), x2 - ellipse2D.getX(), y2 - ellipse2D.getY());
 	}
 }

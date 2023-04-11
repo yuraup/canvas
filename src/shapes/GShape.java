@@ -1,21 +1,33 @@
 package shapes;
 
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Shape;
 
-abstract public class GShape { // 추상 클래스 =/= 실제 클래스
+abstract public class GShape {
 
-	protected Shape shape; // 라이브러리 사용 - shape: 인터페이스 == 내용 없음
+	protected Shape shape;
 
-	public GShape(int x1, int y1, int x2, int y2) {
+	public GShape() {
 	}
 
-	public void addPoint(int x2, int y2) { // n개의 점만큼 반복될 것임
-
+	public void addPoint(int x2, int y2) {
+//		this.x2 = x2;
+//		this.y2 = y2;
 	}
 
-	abstract public boolean onShape(Point p); // 자식들에게 필수 메소드 명시
+	public boolean onShape(Point p) {
+		return shape.contains(p);
+	}
 
-	abstract public void draw(Graphics graphics); // 자식들에게 필수 메소드 명시
+	public void draw(Graphics graphics) {
+		Graphics2D graphics2d = (Graphics2D) graphics;
+		graphics2d.draw(shape);
+	}
+
+	public abstract void setShape(int x1, int y1, int x2, int y2);
+
+	public abstract void movePoint(int x2, int y2);
+
 }

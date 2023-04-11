@@ -10,9 +10,7 @@ import java.util.Vector;
 
 import javax.swing.JPanel;
 
-import shapes.GLine;
-import shapes.GOval;
-import shapes.GRectangle;
+import shapes.GSelect;
 import shapes.GShape;
 
 public class GDrawingPanel extends JPanel {
@@ -66,15 +64,20 @@ public class GDrawingPanel extends JPanel {
 	}
 
 	public void prepareTransforming(int x, int y) {
-		if (toolbar.getEButtonShape() == GToolBar.EShape.eRectangle) { // 제약 조건
-			currentShape = new GRectangle(x, y, x, y);
-		} else if (toolbar.getEButtonShape() == GToolBar.EShape.eOval) {
-			currentShape = new GOval(x, y, x, y);
-		} else if (toolbar.getEButtonShape() == GToolBar.EShape.eLine) {
-			currentShape = new GLine(x, y, x, y);
-		} else if (toolbar.getEButtonShape() == GToolBar.EShape.ePolygon) {
-			currentShape = new GRectangle(x, y, x, y);
-		}
+		currentShape = toolbar.getEButtonShape().getGShape(); // 코드 정리
+		currentShape.setShape(x, y, x, y);
+//
+//		if (toolbar.getEButtonShape() == GToolBar.EShape.eSelect) { // 제약 조건
+//			currentShape = new GSelect(x, y, x, y);
+//		} else if (toolbar.getEButtonShape() == GToolBar.EShape.eRectangle) {
+//			currentShape = new GRectangle(x, y, x, y);
+//		} else if (toolbar.getEButtonShape() == GToolBar.EShape.eOval) {
+//			currentShape = new GOval(x, y, x, y);
+//		} else if (toolbar.getEButtonShape() == GToolBar.EShape.eLine) {
+//			currentShape = new GLine(x, y, x, y);
+//		} else if (toolbar.getEButtonShape() == GToolBar.EShape.ePolygon) {
+//			currentShape = new GRectangle(x, y, x, y);
+//		}
 	}
 
 	public void keepTransforming(int x, int y) { // 두 점 가지고 하는 작업
@@ -82,12 +85,18 @@ public class GDrawingPanel extends JPanel {
 		graphics.setXORMode(getBackground());
 
 		currentShape.draw(graphics);
-		currentShape.addPoint(x, y);
+		currentShape.movePoint(x, y);
 		currentShape.draw(graphics);
 	}
 
 	public void finalizeTransforming(int x, int y) {
-		shapes.add(currentShape);
+		if (currentShape instanceof GSelect) {
+			Graphics graphics = getGraphics();
+			graphics.setXORMode(getBackground());
+			currentShape.draw(graphics);
+		} else {
+			shapes.add(currentShape);
+		}
 		currentShape = null;
 		eDrawingState = EDrawingState.eIdle;
 		toolbar.resetESelectedShape();

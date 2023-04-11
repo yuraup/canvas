@@ -1,4 +1,5 @@
 package frames;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -6,24 +7,38 @@ import javax.swing.ButtonGroup;
 import javax.swing.JRadioButton;
 import javax.swing.JToolBar;
 
+import shapes.GLine;
+import shapes.GOval;
+import shapes.GPolygon;
+import shapes.GRectangle;
+import shapes.GSelect;
+import shapes.GShape;
+
 public class GToolBar extends JToolBar {
 	private static final long serialVersionUID = 1L;
 	JRadioButton eOpenShape = null;
 	ButtonGroup buttonGroup;
 
 	public enum EShape {
-		eSelect("Select"), eRectangle("Rectangle"), // 변수 이름을 0번 이자 스트링 타입 가능
-		eOval("Oval"), eLine("Line"), ePolygon("Polygon"); // user가 정의하는 순서를 가진 집합을 정의
+		// 객체를 달아서 drawing의 코드 개선
+		eSelect("Select", new GSelect()), eRectangle("Rectangle", new GRectangle()), // 변수 이름을 0번 이자 스트링 타입 가능
+		eOval("Oval", new GOval()), eLine("Line", new GLine()), ePolygon("Polygon", new GPolygon()); // user가 정의하는 순서를
+																										// 가진 집합을 정의
 
 		private String name;
+		private GShape gShape;
 
-		private EShape(String name) {
-
+		private EShape(String name, GShape gShape) {
 			this.name = name;
+			this.gShape = gShape;
 		}
 
 		public String getName() {
 			return this.name;
+		}
+
+		public GShape getGShape() {
+			return this.gShape;
 		}
 	}
 
