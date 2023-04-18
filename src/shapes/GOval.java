@@ -5,7 +5,6 @@ import java.awt.geom.Ellipse2D;
 public class GOval extends GShape {
 
 	public GOval() {
-
 	}
 
 	@Override
@@ -17,5 +16,10 @@ public class GOval extends GShape {
 	public void movePoint(int x2, int y2) {
 		Ellipse2D ellipse2D = ((Ellipse2D) shape);
 		ellipse2D.setFrame(ellipse2D.getX(), ellipse2D.getY(), x2 - ellipse2D.getX(), y2 - ellipse2D.getY());
+	}
+
+	@Override
+	public GShape clone() {
+		return new GOval();
 	}
 }

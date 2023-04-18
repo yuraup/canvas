@@ -17,4 +17,9 @@ public class GLine extends GShape {
 		line2D.setLine(line2D.getX1(), line2D.getY1(), x2, y2);
 	}
 
+	@Override
+	public GShape clone() {
+		return new GLine();
+	}
+
 }

@@ -1,62 +1,33 @@
 package shapes;
 
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.Polygon;
 
 public class GPolygon extends GShape {
-
-	private int[] xPoints, yPoints; // 포인트가 n개
-	private int nPoints;
-
 	public GPolygon() {
-		super();
-		xPoints = new int[10];
-		yPoints = new int[10];
-		nPoints = 0;
 	}
 
 	@Override
-	public void setShape(int x1, int y1, int x2, int y2) {
-		if (nPoints < xPoints.length) {
-			xPoints[nPoints] = x2;
-			yPoints[nPoints] = y2;
-			nPoints++;
-			shape = new Polygon(xPoints, yPoints, nPoints);
-		}
+	public void setShape(int x1, int y1, int x2, int y2) { // 원점 찍기
+		this.shape = new Polygon();
+		Polygon polygon = ((Polygon) shape);
+		polygon.addPoint(x1, y1);
+		polygon.addPoint(x2, y2);
+	}
+
+	public void addPoint(int x, int y) { // 점이 필요할 때 추가
+		Polygon polygon = ((Polygon) shape);
+		polygon.addPoint(x, y);
 	}
 
 	@Override
-	public void movePoint(int x2, int y2) {
-		if (nPoints > 0) { // 포인트가 있다면
-			xPoints[nPoints - 1] = x2;
-			yPoints[nPoints - 1] = y2;
-			shape = new Polygon(xPoints, yPoints, nPoints);
-		}
+	public void movePoint(int x, int y) { // 마지막 점을 움직이는 point
+		Polygon polygon = ((Polygon) shape);
+		polygon.xpoints[polygon.npoints - 1] = x; // 마지막 점
+		polygon.ypoints[polygon.npoints - 1] = y;
 	}
 
 	@Override
-	public boolean onShape(Point p) {
-		Polygon polygon = (Polygon) shape;
-		int[] xPoints = polygon.xpoints;
-		int[] yPoints = polygon.ypoints;
-		int nPoints = polygon.npoints;
-		for (int i = 0, j = nPoints - 1; i < nPoints; j = i++) {
-			if ((yPoints[i] > p.y) != (yPoints[j] > p.y)
-					&& (p.x < (xPoints[j] - xPoints[i]) * (p.y - yPoints[i]) / (yPoints[j] - yPoints[i])
-							+ xPoints[i])) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	@Override
-	public void draw(Graphics graphics) {
-		if (shape != null) {
-			Graphics2D graphics2d = (Graphics2D) graphics;
-			graphics2d.draw(shape);
-		}
+	public GShape clone() {
+		return new GPolygon();
 	}
 }

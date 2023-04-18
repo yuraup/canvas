@@ -21,6 +21,7 @@ public class GToolBar extends JToolBar {
 
 	public enum EShape {
 		// 객체를 달아서 drawing의 코드 개선
+
 		eSelect("Select", new GSelect()), eRectangle("Rectangle", new GRectangle()), // 변수 이름을 0번 이자 스트링 타입 가능
 		eOval("Oval", new GOval()), eLine("Line", new GLine()), ePolygon("Polygon", new GPolygon()); // user가 정의하는 순서를
 																										// 가진 집합을 정의
@@ -37,7 +38,7 @@ public class GToolBar extends JToolBar {
 			return this.name;
 		}
 
-		public GShape getGShape() {
+		public GShape getGShape() { // 같은 주소를 계속 가지고 오고 잇음 .새로 만들어야 하는데 -> 자기 복제 하자
 			return this.gShape;
 		}
 	}
@@ -45,21 +46,18 @@ public class GToolBar extends JToolBar {
 	private EShape eSelectedShape;
 
 	public EShape getESelectedShape() { // 도형 모양 가져오기
-		return null;
+		return this.eSelectedShape;
 	}
 
-	public EShape getEButtonShape() {
-		return this.eSelectedShape; // 드로잉 패널에서 그림 그릴 때마다 가지고 갈 것
-	}
+//	public EShape getEButtonShape() {
+//		return this.eSelectedShape; // 드로잉 패널에서 그림 그릴 때마다 가지고 갈 것
+//	}
 
 	public void resetESelectedShape() {// 선택된 도형 초기화
-		this.eSelectedShape = null;
-		if (this.eSelectedShape == null) {
-			JRadioButton selectButton = (JRadioButton) this.getComponent(EShape.eSelect.ordinal());
-			selectButton.doClick();
+		JRadioButton selectButton = (JRadioButton) this.getComponent(EShape.eSelect.ordinal());
+		this.eSelectedShape = EShape.eSelect;
+		selectButton.doClick();
 
-//			this.buttonGroup.clearSelection(); 
-		}
 	}
 
 	public GToolBar() {
@@ -75,9 +73,10 @@ public class GToolBar extends JToolBar {
 			buttonShape.addActionListener(actionHandler);
 			buttonGroup.add(buttonShape);
 		}
-		JRadioButton selectButton = (JRadioButton) this.getComponent(EShape.eSelect.ordinal());
-		selectButton.doClick();
-		eSelectedShape = EShape.eSelect;
+		resetESelectedShape();
+//		JRadioButton selectButton = (JRadioButton) this.getComponent(EShape.eSelect.ordinal());
+//		selectButton.doClick();
+//		eSelectedShape = EShape.eSelect;
 	}
 
 	class ActionHandler implements ActionListener {

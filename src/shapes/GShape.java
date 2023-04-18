@@ -12,10 +12,7 @@ abstract public class GShape {
 	public GShape() {
 	}
 
-	public void addPoint(int x2, int y2) {
-//		this.x2 = x2;
-//		this.y2 = y2;
-	}
+	abstract public GShape clone(); // GShape은 뭘 만들지 모름. 도형이 다 다르다.
 
 	public boolean onShape(Point p) {
 		return shape.contains(p);
@@ -29,5 +26,8 @@ abstract public class GShape {
 	public abstract void setShape(int x1, int y1, int x2, int y2);
 
 	public abstract void movePoint(int x2, int y2);
+
+	public void addPoint(int x, int y) { // 없어도 되고 있어도 됨 =/= abstract
+	}
 
 }

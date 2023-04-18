@@ -19,4 +19,9 @@ public class GRectangle extends GShape {
 	public void setShape(int x1, int y1, int x2, int y2) { // 추가
 		this.shape = new Rectangle(x1, y1, x2 - x1, y2 - y1);
 	}
+
+	@Override
+	public GShape clone() {
+		return new GRectangle(); // 사각형 새로 만들었음 <-> 말만 클론, 실제로는 새 거
+	}
 }
