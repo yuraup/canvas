@@ -3,8 +3,14 @@ package shapes;
 import java.awt.geom.Ellipse2D;
 
 public class GOval extends GShape {
+	private int px, py;
 
 	public GOval() {
+	}
+
+	@Override
+	public GShape clone() {
+		return new GOval();
 	}
 
 	@Override
@@ -19,19 +25,18 @@ public class GOval extends GShape {
 	}
 
 	@Override
-	public GShape clone() {
-		return new GOval();
+	public void setPoint(int x, int y) {
+		this.px = x; // 움직이는 점의 원점을 다시 잡아야 누적되지 않음
+		this.py = y;
 	}
 
 	@Override
 	public void movePoint(int x, int y) {
-		// TODO Auto-generated method stub
+		Ellipse2D ellipse2D = ((Ellipse2D) shape);
+		ellipse2D.setFrame(ellipse2D.getX() + x - px, ellipse2D.getY() + y - py, ellipse2D.getWidth(),
+				ellipse2D.getHeight());
 
-	}
-
-	@Override
-	public void setPoint(int x, int y) {
-		// TODO Auto-generated method stub
-
+		this.px = x; // 움직이는 점의 원점을 다시 잡아야 누적되지 않음
+		this.py = y;
 	}
 }

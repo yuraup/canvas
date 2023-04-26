@@ -3,7 +3,6 @@ package shapes;
 import java.awt.Rectangle;
 
 public class GRectangle extends GShape {
-	private int ox, oy;
 	private int px, py;
 
 	public GRectangle() {
@@ -18,26 +17,26 @@ public class GRectangle extends GShape {
 	@Override
 	public void setShape(int x1, int y1, int x2, int y2) { // 추가
 		this.shape = new Rectangle(x1, y1, x2 - x1, y2 - y1);
-		this.ox = x1;
-		this.oy = y1;
 	}
 
 	@Override
 	public void resizePoint(int x2, int y2) {
 		Rectangle rectangle = ((Rectangle) shape);
 		rectangle.setFrame(rectangle.getX(), rectangle.getY(), x2 - rectangle.getX(), y2 - rectangle.getY());
-
-	}
-
-	@Override
-	public void movePoint(int x, int y) {
-		Rectangle rectangle = ((Rectangle) shape);
-		rectangle.setLocation(ox + x - px, oy + y - py); // 위치 바꿈
 	}
 
 	@Override
 	public void setPoint(int x, int y) {
 		this.px = x; // 움직이는 점의 원점을 잡자.
+		this.py = y;
+	}
+
+	@Override
+	public void movePoint(int x, int y) {
+		Rectangle rectangle = ((Rectangle) shape);
+		rectangle.setLocation(rectangle.x + x - px, rectangle.y + y - py); // 위치 바꿈
+
+		this.px = x; // 움직이는 점의 원점을 다시 잡아야 누적되지 않음
 		this.py = y;
 	}
 }
