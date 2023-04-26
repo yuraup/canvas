@@ -20,7 +20,7 @@ public class GPolygon extends GShape {
 	}
 
 	@Override
-	public void movePoint(int x, int y) { // 마지막 점을 움직이는 point
+	public void resizePoint(int x, int y) { // 마지막 점을 움직이는 point
 		Polygon polygon = ((Polygon) shape);
 		polygon.xpoints[polygon.npoints - 1] = x; // 마지막 점
 		polygon.ypoints[polygon.npoints - 1] = y;
@@ -29,5 +29,17 @@ public class GPolygon extends GShape {
 	@Override
 	public GShape clone() {
 		return new GPolygon();
+	}
+
+	@Override
+	public void movePoint(int x, int y) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void setPoint(int x, int y) {
+		// TODO Auto-generated method stub
+
 	}
 }

@@ -6,7 +6,6 @@ import java.awt.Point;
 import java.awt.Shape;
 
 abstract public class GShape {
-
 	protected Shape shape;
 
 	public GShape() {
@@ -25,9 +24,13 @@ abstract public class GShape {
 
 	public abstract void setShape(int x1, int y1, int x2, int y2);
 
-	public abstract void movePoint(int x2, int y2);
+	public abstract void resizePoint(int x2, int y2);
 
-	public void addPoint(int x, int y) { // 없어도 되고 있어도 됨 =/= abstract
+	public abstract void movePoint(int x, int y);
+
+	public void addPoint(int x, int y) {
 	}
+
+	public abstract void setPoint(int x, int y);; // 없어도 되고 있어도 됨 =/= abstract
 
 }

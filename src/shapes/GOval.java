@@ -13,7 +13,7 @@ public class GOval extends GShape {
 	}
 
 	@Override
-	public void movePoint(int x2, int y2) {
+	public void resizePoint(int x2, int y2) {
 		Ellipse2D ellipse2D = ((Ellipse2D) shape);
 		ellipse2D.setFrame(ellipse2D.getX(), ellipse2D.getY(), x2 - ellipse2D.getX(), y2 - ellipse2D.getY());
 	}
@@ -21,5 +21,17 @@ public class GOval extends GShape {
 	@Override
 	public GShape clone() {
 		return new GOval();
+	}
+
+	@Override
+	public void movePoint(int x, int y) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void setPoint(int x, int y) {
+		// TODO Auto-generated method stub
+
 	}
 }
