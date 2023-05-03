@@ -18,6 +18,12 @@ public class GDrawingPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
+	private enum EUserAction {
+		e2Point, eNPoint
+	}
+
+	private EUserAction eUserAction; // 제약 조건
+
 	private enum EDrawingState { // 어떤 상태를 가질 수 있는지
 		eIdle, eDrawing, eSelecting, eMoving, eResizeing, eRotating
 	}
@@ -64,6 +70,8 @@ public class GDrawingPanel extends JPanel {
 		return null;
 	}
 
+	private Tarnsformer tarnsformer; // 담당자 배정
+	//test1 mac -> gram
 	public void prepareTransforming(int x, int y) {
 		if (eDrawingState == EDrawingState.eDrawing) {
 			// 툴바에서 도형 가져오고 복제해서 사용하기 - n개를 새로 만들자
@@ -73,9 +81,9 @@ public class GDrawingPanel extends JPanel {
 			currentShape = toolBar.getESelectedShape().getGShape().clone();
 			currentShape.setShape(x, y, x, y); // 원점을 잡은 것
 		} else if (eDrawingState == EDrawingState.eMoving) {
-			currentShape.setPoint(x, y);
+			tarnsformer = new Mover(currentShape); // dddddddddddddddddddddddddddddddddd
+			tarnsformer.prepare(x, y); /// 얘 뭐야?!?!?!??!?! 뭘 잘못햇지 ???
 		}
-
 	}
 
 	public void keepTransforming(int x, int y) { // 두 점 가지고 하는 작업
@@ -91,9 +99,7 @@ public class GDrawingPanel extends JPanel {
 			currentShape.resizePoint(x, y);
 			currentShape.draw(graphics);
 		} else if (eDrawingState == EDrawingState.eMoving) {
-			currentShape.draw(graphics);
-			currentShape.movePoint(x, y);
-			currentShape.draw(graphics);
+			tarnsformer.transform(x, y, graphics); // dddddddddddddddddddddddddddddddddddddd
 		}
 	}
 
@@ -110,10 +116,54 @@ public class GDrawingPanel extends JPanel {
 			graphics.setXORMode(getBackground());
 			currentShape.draw(graphics);
 		} else if (eDrawingState == EDrawingState.eMoving) {
-
+			tarnsformer.finalize(x, y);
 		}
 		currentShape = null;
 		toolBar.resetESelectedShape();
+	}
+
+	abstract public class Tarnsformer {
+		protected GShape shape;
+
+		Tarnsformer(GShape shape) {
+			this.shape = shape;
+		}
+
+		public void prepare(int x, int y) {
+//			shape.setPoint(x, y);
+		}
+
+		public void transform(int x, int y, Graphics graphics) {
+//			shape.draw(graphics);
+//			shape.movePoint(x, y);
+//			shape.draw(graphics);
+		}
+
+		public void finalize(int x, int y) {
+
+		}
+	}
+
+	public class Mover extends Tarnsformer {
+//		private GShape shape; 얘 때문에!! 움직이지 않았어!!! 
+
+		Mover(GShape shape) {
+			super(shape);
+		}
+
+		public void prepare(int x, int y) {
+			shape.setPoint(x, y);
+		}
+
+		public void transform(int x, int y, Graphics graphics) {
+			shape.draw(graphics);
+			shape.movePoint(x, y);
+			shape.draw(graphics);
+		}
+
+		public void finalize(int x, int y) {
+
+		}
 	}
 
 	private class MouseEventHandler implements MouseListener, MouseMotionListener {
