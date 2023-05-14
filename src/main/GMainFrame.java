@@ -1,7 +1,6 @@
 package main;
+
 import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Toolkit;
 
 import javax.swing.JFrame;
 
@@ -16,15 +15,17 @@ public class GMainFrame extends JFrame {
 	private GToolBar toolBar;
 	private GDrawingPanel drawingPanel;
 
-	int frame_width = 600;
-	int frame_height = 400;
+//	int frame_width = 600;
+//	int frame_height = 400;
 
 	public GMainFrame() {
 
 		// attributes
-		Dimension res = Toolkit.getDefaultToolkit().getScreenSize();
-		this.setSize(frame_width, frame_height);
-		this.setLocation(res.width / 2 - frame_width / 2, res.height / 2 - frame_height / 2);
+//		Dimension res = Toolkit.getDefaultToolkit().getScreenSize();
+		this.setSize(GConstants.CMainFrame.w, GConstants.CMainFrame.h);
+		this.setLocation(GConstants.CMainFrame.x, GConstants.CMainFrame.y);
+//		this.setSize(frame_width, frame_height);
+//		this.setLocation(res.width / 2 - frame_width / 2, res.height / 2 - frame_height / 2);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // 닫기 버튼 누르면 터미널 죽여라
 
 		// components

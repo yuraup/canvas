@@ -10,19 +10,18 @@ import java.util.Vector;
 
 import javax.swing.JPanel;
 
-import frames.GToolBar.EShape;
-import shapes.GPolygon;
+import main.GConstants;
 import shapes.GShape;
 
 public class GDrawingPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
-	private enum EUserAction {
-		e2Point, eNPoint
-	}
+//	private EUserAction eUserAction; // 제약 조건
 
-	private EUserAction eUserAction; // 제약 조건
+	private enum EDrawingEvent {
+		eStart, eMoving, eCont, eEnd
+	}
 
 	private enum EDrawingState { // 어떤 상태를 가질 수 있는지
 		eIdle, eDrawing, eSelecting, eMoving, eResizeing, eRotating
@@ -71,7 +70,8 @@ public class GDrawingPanel extends JPanel {
 	}
 
 	private Tarnsformer tarnsformer; // 담당자 배정
-	//test1 mac -> gram
+	// test1 mac -> gram
+
 	public void prepareTransforming(int x, int y) {
 		if (eDrawingState == EDrawingState.eDrawing) {
 			// 툴바에서 도형 가져오고 복제해서 사용하기 - n개를 새로 만들자
@@ -81,8 +81,8 @@ public class GDrawingPanel extends JPanel {
 			currentShape = toolBar.getESelectedShape().getGShape().clone();
 			currentShape.setShape(x, y, x, y); // 원점을 잡은 것
 		} else if (eDrawingState == EDrawingState.eMoving) {
-			tarnsformer = new Mover(currentShape); // dddddddddddddddddddddddddddddddddd
-			tarnsformer.prepare(x, y); /// 얘 뭐야?!?!?!??!?! 뭘 잘못햇지 ???
+			tarnsformer = new Mover(currentShape);
+			tarnsformer.prepare(x, y);
 		}
 	}
 
@@ -99,7 +99,7 @@ public class GDrawingPanel extends JPanel {
 			currentShape.resizePoint(x, y);
 			currentShape.draw(graphics);
 		} else if (eDrawingState == EDrawingState.eMoving) {
-			tarnsformer.transform(x, y, graphics); // dddddddddddddddddddddddddddddddddddddd
+			tarnsformer.transform(x, y, graphics);
 		}
 	}
 
@@ -111,7 +111,6 @@ public class GDrawingPanel extends JPanel {
 		if (eDrawingState == EDrawingState.eDrawing) {
 			shapes.add(currentShape);
 		} else if (eDrawingState == EDrawingState.eSelecting) {
-			// 지운다고 / 그리고 저장 안함
 			Graphics graphics = getGraphics();
 			graphics.setXORMode(getBackground());
 			currentShape.draw(graphics);
@@ -178,13 +177,12 @@ public class GDrawingPanel extends JPanel {
 
 		private void mouse1Clicked(MouseEvent e) {
 			if (eDrawingState == EDrawingState.eIdle) {
-				if (toolBar.getESelectedShape().getGShape() instanceof GPolygon) { // polygon이 아니면!
+				if (toolBar.getESelectedShape().getEUserAction() == GConstants.EUserAction.eNPoint) { // polygon이 아니면!
 					eDrawingState = EDrawingState.eDrawing;
 					prepareTransforming(e.getX(), e.getY());
 				}
 			} else if (eDrawingState == EDrawingState.eDrawing) {
-//            continueTransforming(e.getX(), e.getY());
-				if ((toolBar.getESelectedShape().getGShape() instanceof GPolygon)) {
+				if (toolBar.getESelectedShape().getEUserAction() == GConstants.EUserAction.eNPoint) {
 					continueTransforming(e.getX(), e.getY());
 				}
 			}
@@ -199,20 +197,21 @@ public class GDrawingPanel extends JPanel {
 
 		@Override
 		public void mousePressed(MouseEvent e) {
+
 			if (eDrawingState == EDrawingState.eIdle) {
-				if (toolBar.getESelectedShape() == EShape.eSelect) {
+				if (toolBar.getESelectedShape() == GConstants.EShape.eSelect) {
 					currentShape = onShape(e.getPoint()); // 그림 있냐고
 					if (currentShape == null) { // 그림이 있으면 셀렉션 해야 됨
 						eDrawingState = EDrawingState.eSelecting;
 						prepareTransforming(e.getX(), e.getY());
 					} else { // 그림이 없으면
-								// resize, rotate, move 3개의 동작을 해야 하는 곳
+						// resize, rotate, move 3개의 동작을 해야 하는 곳
 						eDrawingState = EDrawingState.eMoving; // move로 상태 변경
 						prepareTransforming(e.getX(), e.getY());
 					}
 
 				} else { // 셀렉트가 아니면, 폴리곤이 아닐 경우
-					if (!(toolBar.getESelectedShape().getGShape() instanceof GPolygon)) {
+					if (toolBar.getESelectedShape().getEUserAction() == GConstants.EUserAction.e2Point) {
 						eDrawingState = EDrawingState.eDrawing;
 						prepareTransforming(e.getX(), e.getY());
 					}
@@ -224,7 +223,7 @@ public class GDrawingPanel extends JPanel {
 		public void mouseDragged(MouseEvent e) {
 			if (eDrawingState == EDrawingState.eDrawing) {
 //            keepTransforming(e.getX(), e.getY());
-				if (!(toolBar.getESelectedShape().getGShape() instanceof GPolygon)) {
+				if (toolBar.getESelectedShape().getEUserAction() == GConstants.EUserAction.e2Point) {
 					keepTransforming(e.getX(), e.getY());
 				}
 			} else if (eDrawingState == EDrawingState.eSelecting) {
@@ -237,7 +236,7 @@ public class GDrawingPanel extends JPanel {
 		@Override
 		public void mouseMoved(MouseEvent e) {
 			if (eDrawingState == EDrawingState.eDrawing) {
-				if ((toolBar.getESelectedShape().getGShape() instanceof GPolygon)) {
+				if (toolBar.getESelectedShape().getEUserAction() == GConstants.EUserAction.eNPoint) {
 					keepTransforming(e.getX(), e.getY());
 				}
 			}
@@ -246,7 +245,7 @@ public class GDrawingPanel extends JPanel {
 		@Override
 		public void mouseReleased(MouseEvent e) {
 			if (eDrawingState == EDrawingState.eDrawing) {
-				if (!(toolBar.getESelectedShape().getGShape() instanceof GPolygon)) {
+				if (toolBar.getESelectedShape().getEUserAction() == GConstants.EUserAction.e2Point) {
 					finalizeTransforming(e.getX(), e.getY());
 					eDrawingState = EDrawingState.eIdle;
 				}
