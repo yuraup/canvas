@@ -20,6 +20,11 @@ public class GConstants {
 		e2Point, eNPoint
 	}
 
+	public enum EAnchors {
+		NW, NN, NE, EE, SE, SS, SW, WW, RR, // rotate
+		MM // move
+	}
+
 	public enum EShape {
 		// 객체를 달아서 drawing의 코드 개선
 
@@ -37,6 +42,7 @@ public class GConstants {
 		private EShape(String name, GShape gShape, EUserAction eUserAction) {
 			this.name = name;
 			this.gShape = gShape;
+			this.eUserAction = eUserAction;
 		}
 
 		public String getName() {

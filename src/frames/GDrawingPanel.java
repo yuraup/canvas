@@ -2,6 +2,7 @@ package frames;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -10,7 +11,11 @@ import java.util.Vector;
 
 import javax.swing.JPanel;
 
-import main.GConstants;
+import Transformer.GDrawer;
+import Transformer.GTransformer;
+import main.GConstants.EAnchors;
+import main.GConstants.EShape;
+import main.GConstants.EUserAction;
 import shapes.GShape;
 
 public class GDrawingPanel extends JPanel {
@@ -24,7 +29,7 @@ public class GDrawingPanel extends JPanel {
 	}
 
 	private enum EDrawingState { // 어떤 상태를 가질 수 있는지
-		eIdle, eDrawing, eSelecting, eMoving, eResizeing, eRotating
+		eIdle, eTransforming
 	}
 
 	private EDrawingState eDrawingState;// 어떤 상태인지
@@ -38,6 +43,8 @@ public class GDrawingPanel extends JPanel {
 	public void setToolBar(GToolBar toolBar) { // 친구는 부모가 연결해줘야 함 ( MainFrame에서 연결 )
 		this.toolBar = toolBar;
 	}
+
+	private GTransformer transformer;
 
 	public GDrawingPanel() {
 		this.eDrawingState = EDrawingState.eIdle;
@@ -53,10 +60,8 @@ public class GDrawingPanel extends JPanel {
 
 	public void paint(Graphics graphics) {
 		super.paint(graphics); // 오버라이딩
-		// super.paint를 해야.. 원래 JPanel이 할 paint도 하고, 내 것도 추후로 하지
-		// 오버라이딩은, 확장으로 갈 것이냐, 리플레이스로 갈 것이냐의 문제가 있어
 		for (GShape shape : shapes) {
-			shape.draw(graphics);
+			shape.draw((Graphics2D) graphics);
 		}
 	}
 
@@ -69,100 +74,51 @@ public class GDrawingPanel extends JPanel {
 		return null;
 	}
 
-	private Tarnsformer tarnsformer; // 담당자 배정
-	// test1 mac -> gram
+	public void initTransforming(int x, int y) {
+		Graphics2D graphics2d = (Graphics2D) this.getGraphics(); // 트랜스포머가 그림을 그리니까 필요함
 
-	public void prepareTransforming(int x, int y) {
-		if (eDrawingState == EDrawingState.eDrawing) {
-			// 툴바에서 도형 가져오고 복제해서 사용하기 - n개를 새로 만들자
-			currentShape = toolBar.getESelectedShape().getGShape().clone();
-			currentShape.setShape(x, y, x, y); // 원점을 잡은 것
-		} else if (eDrawingState == EDrawingState.eSelecting) {
-			currentShape = toolBar.getESelectedShape().getGShape().clone();
-			currentShape.setShape(x, y, x, y); // 원점을 잡은 것
-		} else if (eDrawingState == EDrawingState.eMoving) {
-			tarnsformer = new Mover(currentShape);
-			tarnsformer.prepare(x, y);
+		// 크게 selection과 draw로 나뉨
+		if (this.toolBar.getESelectedShape() == EShape.eSelect) {// selection
+
+		} else { // draw
+			if (this.toolBar.getESelectedShape().getEUserAction() == EUserAction.e2Point) {
+				this.currentShape = this.toolBar.getESelectedShape().getGShape().clone();
+				this.transformer = new GDrawer(this.currentShape);
+				this.transformer.initTransform(x, y, graphics2d);
+			} else { // polygon
+
+			}
 		}
 	}
 
 	public void keepTransforming(int x, int y) { // 두 점 가지고 하는 작업
-		Graphics graphics = getGraphics();
-		graphics.setXORMode(getBackground());
-
-		if (eDrawingState == EDrawingState.eDrawing) {
-			currentShape.draw(graphics);
-			currentShape.resizePoint(x, y);// width height 계산하는 함수
-			currentShape.draw(graphics);
-		} else if (eDrawingState == EDrawingState.eSelecting) {
-			currentShape.draw(graphics);
-			currentShape.resizePoint(x, y);
-			currentShape.draw(graphics);
-		} else if (eDrawingState == EDrawingState.eMoving) {
-			tarnsformer.transform(x, y, graphics);
-		}
+		Graphics2D graphics2d = (Graphics2D) this.getGraphics();
+		graphics2d.setXORMode(getBackground());
+		this.transformer.keepTransform(x, y, graphics2d);
 	}
 
 	public void continueTransforming(int x, int y) { // 계속하여 point를 추가시키는 것 (click마다)
-		currentShape.addPoint(x, y);
+		Graphics2D graphics2D = (Graphics2D) this.getGraphics();
+		this.transformer.continueTransform(x, y, graphics2D);
 	}
 
 	public void finalizeTransforming(int x, int y) {
-		if (eDrawingState == EDrawingState.eDrawing) {
-			shapes.add(currentShape);
-		} else if (eDrawingState == EDrawingState.eSelecting) {
-			Graphics graphics = getGraphics();
-			graphics.setXORMode(getBackground());
-			currentShape.draw(graphics);
-		} else if (eDrawingState == EDrawingState.eMoving) {
-			tarnsformer.finalize(x, y);
-		}
-		currentShape = null;
-		toolBar.resetESelectedShape();
+		Graphics2D graphics2D = (Graphics2D) this.getGraphics();
+		this.transformer.finalizeTransform(x, y, graphics2D);
 	}
 
-	abstract public class Tarnsformer {
-		protected GShape shape;
-
-		Tarnsformer(GShape shape) {
-			this.shape = shape;
+	private EAnchors onShape(int x, int y) {
+		for (GShape gShape : this.shapes) { // 루틴 돌리면서 모든 그림한테 다 물어봄
+			EAnchors eAnchor = gShape.onShape(x, y);
+			if (eAnchor != null) { // selection O
+				this.currentShape = gShape;
+				return eAnchor;
+			}
 		}
-
-		public void prepare(int x, int y) {
-//			shape.setPoint(x, y);
-		}
-
-		public void transform(int x, int y, Graphics graphics) {
-//			shape.draw(graphics);
-//			shape.movePoint(x, y);
-//			shape.draw(graphics);
-		}
-
-		public void finalize(int x, int y) {
-
-		}
+		return null;
 	}
 
-	public class Mover extends Tarnsformer {
-//		private GShape shape; 얘 때문에!! 움직이지 않았어!!! 
-
-		Mover(GShape shape) {
-			super(shape);
-		}
-
-		public void prepare(int x, int y) {
-			shape.setPoint(x, y);
-		}
-
-		public void transform(int x, int y, Graphics graphics) {
-			shape.draw(graphics);
-			shape.movePoint(x, y);
-			shape.draw(graphics);
-		}
-
-		public void finalize(int x, int y) {
-
-		}
+	private void clearSelection() {
 	}
 
 	private class MouseEventHandler implements MouseListener, MouseMotionListener {
@@ -177,82 +133,44 @@ public class GDrawingPanel extends JPanel {
 
 		private void mouse1Clicked(MouseEvent e) {
 			if (eDrawingState == EDrawingState.eIdle) {
-				if (toolBar.getESelectedShape().getEUserAction() == GConstants.EUserAction.eNPoint) { // polygon이 아니면!
-					eDrawingState = EDrawingState.eDrawing;
-					prepareTransforming(e.getX(), e.getY());
-				}
-			} else if (eDrawingState == EDrawingState.eDrawing) {
-				if (toolBar.getESelectedShape().getEUserAction() == GConstants.EUserAction.eNPoint) {
-					continueTransforming(e.getX(), e.getY());
-				}
-			}
-		}
-
-		private void mouse2Clicked(MouseEvent e) {
-			if (eDrawingState == EDrawingState.eDrawing) {
-				finalizeTransforming(e.getX(), e.getY());
-				eDrawingState = EDrawingState.eIdle;
-			}
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e) {
-
-			if (eDrawingState == EDrawingState.eIdle) {
-				if (toolBar.getESelectedShape() == GConstants.EShape.eSelect) {
-					currentShape = onShape(e.getPoint()); // 그림 있냐고
-					if (currentShape == null) { // 그림이 있으면 셀렉션 해야 됨
-						eDrawingState = EDrawingState.eSelecting;
-						prepareTransforming(e.getX(), e.getY());
-					} else { // 그림이 없으면
-						// resize, rotate, move 3개의 동작을 해야 하는 곳
-						eDrawingState = EDrawingState.eMoving; // move로 상태 변경
-						prepareTransforming(e.getX(), e.getY());
-					}
-
-				} else { // 셀렉트가 아니면, 폴리곤이 아닐 경우
-					if (toolBar.getESelectedShape().getEUserAction() == GConstants.EUserAction.e2Point) {
-						eDrawingState = EDrawingState.eDrawing;
-						prepareTransforming(e.getX(), e.getY());
-					}
-				}
-			}
-		}
-
-		@Override
-		public void mouseDragged(MouseEvent e) {
-			if (eDrawingState == EDrawingState.eDrawing) {
-//            keepTransforming(e.getX(), e.getY());
-				if (toolBar.getESelectedShape().getEUserAction() == GConstants.EUserAction.e2Point) {
-					keepTransforming(e.getX(), e.getY());
-				}
-			} else if (eDrawingState == EDrawingState.eSelecting) {
-				keepTransforming(e.getX(), e.getY());
-			} else if (eDrawingState == EDrawingState.eMoving) {
-				keepTransforming(e.getX(), e.getY());
+				initTransforming(e.getX(), e.getY());
+			} else if (eDrawingState == EDrawingState.eTransforming) {
+				continueTransforming(e.getX(), e.getY());
 			}
 		}
 
 		@Override
 		public void mouseMoved(MouseEvent e) {
-			if (eDrawingState == EDrawingState.eDrawing) {
-				if (toolBar.getESelectedShape().getEUserAction() == GConstants.EUserAction.eNPoint) {
-					keepTransforming(e.getX(), e.getY());
-				}
+			if (eDrawingState == EDrawingState.eTransforming) {
+				keepTransforming(e.getX(), e.getY());
+			}
+		}
+
+		private void mouse2Clicked(MouseEvent e) {
+			if (eDrawingState == EDrawingState.eTransforming) {
+				finalizeTransforming(e.getX(), e.getY());
+			}
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+			if (eDrawingState == EDrawingState.eIdle) {
+				initTransforming(e.getX(), e.getY());
+				eDrawingState = EDrawingState.eTransforming;
+			}
+
+		}
+
+		@Override
+		public void mouseDragged(MouseEvent e) {
+			if (eDrawingState == EDrawingState.eTransforming) { // 상태 이해를 위해 적어둠. 없어도 무방함.
+				keepTransforming(e.getX(), e.getY());
 			}
 		}
 
 		@Override
 		public void mouseReleased(MouseEvent e) {
-			if (eDrawingState == EDrawingState.eDrawing) {
-				if (toolBar.getESelectedShape().getEUserAction() == GConstants.EUserAction.e2Point) {
-					finalizeTransforming(e.getX(), e.getY());
-					eDrawingState = EDrawingState.eIdle;
-				}
-			} else if (eDrawingState == EDrawingState.eSelecting) {
-				finalizeTransforming(e.getX(), e.getY());
-				eDrawingState = EDrawingState.eIdle;
-			} else if (eDrawingState == EDrawingState.eMoving) {
+			if (eDrawingState == EDrawingState.eTransforming) {
 				finalizeTransforming(e.getX(), e.getY());
 				eDrawingState = EDrawingState.eIdle;
 			}
