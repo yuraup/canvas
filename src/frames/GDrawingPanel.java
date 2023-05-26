@@ -74,17 +74,24 @@ public class GDrawingPanel extends JPanel {
 		return null;
 	}
 
-	public void initTransforming(int x, int y) {
+	public void initTransforming(int x, int y) { // 어떤 트랜스포머를 쓸지를 판단함.
+		// 우선순위 1. 툴바가 눌렸냐 안 눌렸냐 - select는 안 눌렸다는 뜻
+		// 우선순위2.
 		Graphics2D graphics2d = (Graphics2D) this.getGraphics(); // 트랜스포머가 그림을 그리니까 필요함
 
 		// 크게 selection과 draw로 나뉨
 		if (this.toolBar.getESelectedShape() == EShape.eSelect) {// selection
 
+			if (onShape(x, y) == null) { // 도형이 없으면
+
+			} else { // 도형이 있으면
+
+			}
 		} else { // draw
 			if (this.toolBar.getESelectedShape().getEUserAction() == EUserAction.e2Point) {
 				this.currentShape = this.toolBar.getESelectedShape().getGShape().clone();
 				this.transformer = new GDrawer(this.currentShape);
-				this.transformer.initTransform(x, y, graphics2d);
+				this.transformer.initTransform(x, y, graphics2d); // 그리기 시작
 			} else { // polygon
 
 			}
