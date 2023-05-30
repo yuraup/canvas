@@ -21,7 +21,8 @@ public class GDrawer extends GTransformer {
 	}
 
 	public void finalizeTransform(int x, int y, Graphics2D graphics2D) {
-//		this.shape.movePoint(x, y);
+		this.shape.setSelected(true);
+		this.shape.draw(graphics2D); 
 	}
 
 	@Override

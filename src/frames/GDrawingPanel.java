@@ -12,6 +12,7 @@ import java.util.Vector;
 import javax.swing.JPanel;
 
 import Transformer.GDrawer;
+import Transformer.GMover;
 import Transformer.GTransformer;
 import main.GConstants.EAnchors;
 import main.GConstants.EShape;
@@ -34,8 +35,8 @@ public class GDrawingPanel extends JPanel {
 
 	private EDrawingState eDrawingState;// 어떤 상태인지
 
-	private Vector<GShape> shapes; // 그린 사각형 저장할 공간 / 기존 그림 여기에 저장되어 있음
-	private GShape currentShape; // 현재 작업 / 잠깐잠깐 쓸 포인터
+	private Vector<GShape> shapes; 
+	private GShape currentShape; 
 
 	// association
 	private GToolBar toolBar;
@@ -76,16 +77,26 @@ public class GDrawingPanel extends JPanel {
 
 	public void initTransforming(int x, int y) { // 어떤 트랜스포머를 쓸지를 판단함.
 		// 우선순위 1. 툴바가 눌렸냐 안 눌렸냐 - select는 안 눌렸다는 뜻
-		// 우선순위2.
+
 		Graphics2D graphics2d = (Graphics2D) this.getGraphics(); // 트랜스포머가 그림을 그리니까 필요함
 
 		// 크게 selection과 draw로 나뉨
 		if (this.toolBar.getESelectedShape() == EShape.eSelect) {// selection
-
-			if (onShape(x, y) == null) { // 도형이 없으면
-
-			} else { // 도형이 있으면
-
+			EAnchors eAnchor = this.onShape(x, y);
+			if (eAnchor == null) {
+				this.clearSelection();
+				//selector
+			} else {
+				switch (eAnchor) {
+				case MM:
+					this.transformer = new GMover(this.currentShape);
+					this.transformer.initTransform(x, y, graphics2d);
+					break;
+				case RR: //rotate
+					break;
+				default: //resize
+					break;
+				}		
 			}
 		} else { // draw
 			if (this.toolBar.getESelectedShape().getEUserAction() == EUserAction.e2Point) {
@@ -111,6 +122,7 @@ public class GDrawingPanel extends JPanel {
 
 	public void finalizeTransforming(int x, int y) {
 		Graphics2D graphics2D = (Graphics2D) this.getGraphics();
+		//unselect current selected Shapes
 		this.transformer.finalizeTransform(x, y, graphics2D);
 	}
 

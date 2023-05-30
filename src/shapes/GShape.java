@@ -18,6 +18,15 @@ abstract public class GShape {
 
 	abstract public GShape clone(); // GShape은 뭘 만들지 모름. 도형이 다 다르다.
 
+	
+	public Shape getShape() {
+		return this.shape;
+	}
+	
+	public void setShape(Shape shape) {
+		this.shape = shape;
+	}
+	
 	public boolean onShape(Point p) {
 		return shape.contains(p);
 	}
@@ -58,5 +67,7 @@ abstract public class GShape {
 	}
 
 	public abstract void setPoint(int x, int y); // 없어도 되고 있어도 됨 =/= abstract
+
+	
 
 }
