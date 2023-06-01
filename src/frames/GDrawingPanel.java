@@ -3,7 +3,6 @@ package frames;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -13,6 +12,7 @@ import javax.swing.JPanel;
 
 import Transformer.GDrawer;
 import Transformer.GMover;
+import Transformer.GSelect;
 import Transformer.GTransformer;
 import main.GConstants.EAnchors;
 import main.GConstants.EShape;
@@ -35,8 +35,8 @@ public class GDrawingPanel extends JPanel {
 
 	private EDrawingState eDrawingState;// 어떤 상태인지
 
-	private Vector<GShape> shapes; 
-	private GShape currentShape; 
+	private Vector<GShape> shapes;
+	private GShape currentShape;
 
 	// association
 	private GToolBar toolBar;
@@ -65,15 +65,15 @@ public class GDrawingPanel extends JPanel {
 			shape.draw((Graphics2D) graphics);
 		}
 	}
-
-	public GShape onShape(Point point) { // 도형 있는지 확인
-		for (GShape shape : shapes) {
-			if (shape.onShape(point)) {
-				return shape;
-			}
-		}
-		return null;
-	}
+//
+//	public GShape onShape(Point point) { // 도형 있는지 확인
+//		for (GShape shape : shapes) {
+//			if (shape.onShape(point)) {
+//				return shape;
+//			}
+//		}
+//		return null;
+//	}
 
 	public void initTransforming(int x, int y) { // 어떤 트랜스포머를 쓸지를 판단함.
 		// 우선순위 1. 툴바가 눌렸냐 안 눌렸냐 - select는 안 눌렸다는 뜻
@@ -82,21 +82,23 @@ public class GDrawingPanel extends JPanel {
 
 		// 크게 selection과 draw로 나뉨
 		if (this.toolBar.getESelectedShape() == EShape.eSelect) {// selection
-			EAnchors eAnchor = this.onShape(x, y);
-			if (eAnchor == null) {
+			EAnchors eSelectedAnchor = this.onShape(x, y);
+			if (eSelectedAnchor == null) {
 				this.clearSelection();
-				//selector
+				this.transformer = new GSelect(this.currentShape);
+				this.transformer.initTransform(x, y, graphics2d);
+				// selector
 			} else {
-				switch (eAnchor) {
+				switch (eSelectedAnchor) {
 				case MM:
 					this.transformer = new GMover(this.currentShape);
 					this.transformer.initTransform(x, y, graphics2d);
 					break;
-				case RR: //rotate
+				case RR: // rotate
 					break;
-				default: //resize
+				default: // resize
 					break;
-				}		
+				}
 			}
 		} else { // draw
 			if (this.toolBar.getESelectedShape().getEUserAction() == EUserAction.e2Point) {
@@ -122,8 +124,9 @@ public class GDrawingPanel extends JPanel {
 
 	public void finalizeTransforming(int x, int y) {
 		Graphics2D graphics2D = (Graphics2D) this.getGraphics();
-		//unselect current selected Shapes
-		this.transformer.finalizeTransform(x, y, graphics2D);
+		// unselect current selected Shapes
+		this.transformer.finalizeTransform(x, y, graphics2D, this.shapes);
+		this.toolBar.resetESelectedShape();
 	}
 
 	private EAnchors onShape(int x, int y) {
