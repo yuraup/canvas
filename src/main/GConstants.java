@@ -32,11 +32,11 @@ public class GConstants {
 		eRectangle("Rectangle", new GRectangle(), EUserAction.e2Point), // 변수 이름을 0번 이자 스트링 타입 가능
 		eOval("Oval", new GOval(), EUserAction.e2Point), eLine("Line", new GLine(), EUserAction.e2Point),
 		ePolygon("Polygon", new GPolygon(), EUserAction.eNPoint); // user가 정의하는 순서를
+		// 여기에 커서 집어넣어서 코드 품질 향상하기
 		// 가진 집합을 정의
 
 		private String name;
 		private GShape gShape;
-
 		private EUserAction eUserAction;
 
 		private EShape(String name, GShape gShape, EUserAction eUserAction) {

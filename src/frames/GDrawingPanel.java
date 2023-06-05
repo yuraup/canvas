@@ -1,6 +1,7 @@
 package frames;
 
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
@@ -37,6 +38,7 @@ public class GDrawingPanel extends JPanel {
 
 	private Vector<GShape> shapes;
 	private GShape currentShape;
+	private Cursor cursor = null;
 
 	// association
 	private GToolBar toolBar;
@@ -143,7 +145,49 @@ public class GDrawingPanel extends JPanel {
 	private void clearSelection() {
 	}
 
-	private class MouseEventHandler implements MouseListener, MouseMotionListener {
+	private void changeCursor(int x, int y) {
+		EAnchors eAnchor = this.onShape(x, y);
+		if (eAnchor == null) {
+			cursor = new Cursor(Cursor.DEFAULT_CURSOR);
+		} else {
+
+			switch (eAnchor) {
+			case MM:
+				cursor = new Cursor(Cursor.CROSSHAIR_CURSOR);
+				break;
+			case RR: // rotate
+				cursor = new Cursor(Cursor.HAND_CURSOR);
+				break;
+			case NW: // rotate
+				cursor = new Cursor(Cursor.NW_RESIZE_CURSOR);
+				break;
+			case NN: // rotate
+				cursor = new Cursor(Cursor.N_RESIZE_CURSOR);
+				break;
+			case NE: // rotate
+				cursor = new Cursor(Cursor.NE_RESIZE_CURSOR);
+				break;
+			case EE: // rotate
+				cursor = new Cursor(Cursor.E_RESIZE_CURSOR);
+				break;
+			case SW: // rotate
+				cursor = new Cursor(Cursor.SE_RESIZE_CURSOR);
+				break;
+			case SS: // rotate
+				cursor = new Cursor(Cursor.S_RESIZE_CURSOR);
+				break;
+			case SE: // rotate
+				cursor = new Cursor(Cursor.SE_RESIZE_CURSOR);
+			default:
+				cursor = new Cursor(Cursor.DEFAULT_CURSOR);
+				break;
+			}
+		}
+		this.setCursor(cursor);
+
+	}
+
+	class MouseEventHandler implements MouseListener, MouseMotionListener {
 		@Override
 		public void mouseClicked(MouseEvent e) {
 			if (e.getClickCount() == 1) {
@@ -165,6 +209,8 @@ public class GDrawingPanel extends JPanel {
 		public void mouseMoved(MouseEvent e) {
 			if (eDrawingState == EDrawingState.eTransforming) {
 				keepTransforming(e.getX(), e.getY());
+			} else if (eDrawingState == EDrawingState.eIdle) {
+				changeCursor(e.getX(), e.getY());
 			}
 		}
 
