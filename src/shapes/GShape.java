@@ -3,10 +3,11 @@ package shapes;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Shape;
+import java.io.Serializable;
 
 import main.GConstants.EAnchors;
 
-abstract public class GShape {
+abstract public class GShape implements Serializable {
 	protected Shape shape;
 	private GAnchors gAnchors;
 	private boolean bSlected;
@@ -39,7 +40,6 @@ abstract public class GShape {
 
 	public void setSelected(boolean bSelected) { // setter
 		this.bSlected = bSelected;
-
 	};
 
 	public EAnchors onShape(int x, int y) {
